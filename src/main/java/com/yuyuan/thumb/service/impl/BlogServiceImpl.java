@@ -12,6 +12,7 @@ import com.yuyuan.thumb.mapper.BlogMapper;
 import com.yuyuan.thumb.service.ThumbService;
 import com.yuyuan.thumb.service.UserService;
 import jakarta.annotation.Resource;
+import com.yuyuan.thumb.util.RedisKeyUtil;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.data.redis.core.RedisTemplate;
@@ -64,8 +65,7 @@ public class BlogServiceImpl extends ServiceImpl<BlogMapper, Blog>
         if (ObjUtil.isNotEmpty(loginUser)) {
             List<Object> blogIdList = blogList.stream().map(blog -> blog.getId().toString()).collect(Collectors.toList());
             // 获取点赞
-            List<Object> thumbList = redisTemplate.opsForHash().multiGet(ThumbConstant.USER_THUMB_KEY_PREFIX + loginUser.getId(), blogIdList);
-            for (int i = 0; i < thumbList.size(); i++) {
+            List<Object> thumbList = redisTemplate.opsForHash().multiGet(RedisKeyUtil.getUserThumbKey(loginUser.getId()), blogIdList);for (int i = 0; i < thumbList.size(); i++) {
                 if (thumbList.get(i) == null) {
                     continue;
                 }
